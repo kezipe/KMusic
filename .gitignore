@@ -1,4 +1,5 @@
 musicserv
+!musicserv/
 .env
 .DS_Store
 xcuserdata
