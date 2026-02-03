@@ -1,5 +1,4 @@
-musicserv
-!musicserv/
+musicserv_bin
 .env
 .DS_Store
 xcuserdata

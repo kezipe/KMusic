@@ -21,7 +21,7 @@ jobs:
       run: cd musicserv && go mod download
 
     - name: Build
-      run: cd musicserv && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o ../musicserv
+      run: cd musicserv && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o ../musicserv_bin
 
     - name: Stop Running Service and Clean Up
       uses: appleboy/ssh-action@v1.0.0
@@ -41,7 +41,7 @@ jobs:
         host: ${{ secrets.SERVER_HOST }}
         username: ${{ secrets.SERVER_USERNAME }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        source: musicserv
+        source: musicserv_bin
         target: ~/musicserv/
         overwrite: true
 
@@ -52,4 +52,5 @@ jobs:
         username: ${{ secrets.SERVER_USERNAME }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
+          mv ~/musicserv/musicserv_bin ~/musicserv/musicserv
           supervisorctl start musicserv
