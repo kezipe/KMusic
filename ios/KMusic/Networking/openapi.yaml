@@ -1,0 +1,101 @@
+openapi: 3.0.3
+info:
+  title: Music Server - Song Show API
+  description: API endpoint for retrieving a single song by ID with pre-signed audio URL
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+    description: Development server
+  - url: https://ppnn.ca/music
+    description: Production server
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Api-Key
+      description: API key for authentication
+paths:
+  /songs/{id}:
+    get:
+      summary: Get a song by ID
+      description: Retrieves a specific song by its ID and generates a pre-signed URL for accessing the audio file
+      operationId: SongsShow
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier of the song
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Song retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  song:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                        description: The unique identifier of the song
+                      title:
+                        type: string
+                        example: My Awesome Song
+                        description: The title of the song
+                      audioUrl:
+                        type: string
+                        example: https://s3.amazonaws.com/bucket/songs/uuid-filename.mp3?...
+                        description: Pre-signed URL for accessing the audio file
+                      createdAt:
+                        type: string
+                        format: date-time
+                        example: <seconds from 1970>
+                        description: Timestamp when the song was created
+                      updatedAt:
+                        type: string
+                        format: date-time
+                        example: <seconds from 1970>
+                        description: Timestamp when the song was last updated
+                    required:
+                      - id
+                      - title
+                      - audioUrl
+                      - createdAt
+                      - updatedAt
+        '401':
+          description: Unauthorized - Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Unauthorized
+        '404':
+          description: Song not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Song not found
+        '500':
+          description: Server error when generating pre-signed URL
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Failed to generate audio URL
